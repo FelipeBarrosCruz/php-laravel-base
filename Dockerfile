@@ -91,6 +91,8 @@ WORKDIR /var/app
 
 COPY /src /var/app/
 
+RUN composer install
+
 RUN chown -R www-data.www-data /var/app/
 
 # Adding crontab to the appropriate location
