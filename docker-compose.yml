@@ -1,0 +1,18 @@
+services:
+  php-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./src:/var/app
+    networks:
+      - app-network
+    ports:
+      - "3000:80"
+    environment:
+      - LARAVEL_ENV=dev
+
+networks:
+  app-network:
+    driver: bridge
