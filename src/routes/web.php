@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Response;
+use Illuminate\Support\Facades\Response;
 
 /*
 |--------------------------------------------------------------------------
