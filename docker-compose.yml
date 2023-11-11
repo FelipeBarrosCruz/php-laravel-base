@@ -4,9 +4,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: php
     restart: always
     volumes:
       - ./src:/var/app
+      - /var/app/vendor
     networks:
       - app-network
     ports:

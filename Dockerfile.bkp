@@ -1,4 +1,43 @@
-FROM escritha/php-base as php
+FROM ubuntu:20.04 as base
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Ensure UTF-8 and let the conatiner know that there is no tty
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    \
+    build-essential \
+    locales \
+    curl \
+    wget \
+    vim \
+    software-properties-common \
+    supervisor \
+    rsyslog \
+    texlive-full \
+    tesseract-ocr-por \
+    graphicsmagick \ 
+    libcups2 \
+    libpoppler-cpp-dev \
+    python3-dev \
+    python3-pip \
+    pkg-config \
+    && \
+    sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=en_US.UTF-8 && \
+    apt-get clean
+
+ENV LANG en_US.UTF-8
+
+# Python configuration
+RUN pip install --upgrade virtualenv pdftotext pdf2image borb pytesseract Pillow
+
+# Supervisor configuration
+ADD .docker/app/supervisord.conf /etc/supervisor/supervisord.conf
+
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+
+FROM base as php
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
@@ -57,8 +96,6 @@ ADD /src /var/app/
 ADD /src/composer.* ./
 
 RUN chown -R www-data.www-data /var/app/
-
-RUN chmod -R 775 /var/app/storage /var/app/bootstrap/cache
 
 # Adding crontab to the appropriate location
 ADD crontab /etc/cron.d/default
